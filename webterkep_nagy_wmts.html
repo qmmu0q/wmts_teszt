@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Kontúr Csoport</title>
+		<meta charset='utf-8'>
+		<meta name='viewport' content='initial-scale=1,user-scalable=no' />
+		<!--LEAFLET 1.9.4-->
+		<link rel='stylesheet' href='leaflet/leaflet.css' />
+		<script src='leaflet/leaflet.js'></script>
+		<style>
+			html, body {
+                height: 100%;
+				width: 100%;
+                margin: 0;
+            }
+            #map_div {
+                width: 100%;
+                height: 100%;
+            }
+			svg path.kcsvonalak:hover {
+				stroke-width: 15;
+				stroke: #002557;
+			}
+		</style>
+	</head>
+	<body>
+		<div id='map_div'></div>
+		<script>
+			var map=L.map('map_div');
+
+			//ALAPTÉRKÉPEk BETÖLTÉSE
+			var osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			}).addTo(map);
+
+			var osm_2=L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+			});
+
+			var stadia = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+			});
+
+			var stamen = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				subdomains: 'abcd',
+				minZoom: 0,
+				maxZoom: 20,
+				ext: 'png'
+			});
+
+			var stamen_2 = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				subdomains: 'abcd',
+				minZoom: 0,
+				maxZoom: 20,
+				ext: 'png'
+			});
+
+			var stamen_3 = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				subdomains: 'abcd',
+				minZoom: 0,
+				maxZoom: 18,
+				ext: 'png'
+			});
+
+			var stamen_4 = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				subdomains: 'abcd',
+				minZoom: 0,
+				maxZoom: 18,
+				ext: 'png'
+			});
+
+			var esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+				attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+			});
+
+			var esri_2 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+				attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+			});
+
+			var esri_3 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+				attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+			});
+
+			var cartodb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				subdomains: 'abcd'
+			});
+
+			var cartodb_2 = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				subdomains: 'abcd'
+			});
+
+			var cartodb_3 = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				subdomains: 'abcd'
+			});
+
+			var cartodb_4 = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				subdomains: 'abcd'
+			});
+
+			//ORSZÁGHATÁR RÉTEG
+			fetch('geojson/osm_orszaghatar_vonal_wgs.geojson').then(r=>r.json()).then(function(orszaghatar) {
+				orszaghatarReteg = L.geoJson(orszaghatar, {});
+				map.fitBounds(orszaghatarReteg.getBounds());
+			});
+
+			//KCS PONTRÉTEG
+			var defaultIcon = L.icon({
+				iconUrl: 'pont_kek.png',
+				iconSize: [20]
+			});
+			var highlightedIcon = L.icon({
+				iconUrl: 'pont_konturkek.png',
+				iconSize: [30]
+			});
+			fetch('geojson/pontok_join_wgs_retain.geojson').then(r => r.json()).then(function(kcs_pontok) {
+				var kcspontokReteg = L.geoJson(kcs_pontok, {
+					pointToLayer: function(feature, latlng) {
+						var coordinates = feature.geometry.coordinates[0];
+						var lat = coordinates[1];
+						var lng = coordinates[0];
+						return L.marker([lat, lng], {icon: defaultIcon});
+					}
+				}).addTo(map);
+				kcspontokReteg.on('mouseover', function(e) {
+					e.layer.setIcon(highlightedIcon);
+				});
+				kcspontokReteg.on('mouseout', function(e) {
+					e.layer.setIcon(defaultIcon);
+				});
+			});
+
+			//KCS VONALRÉTEG
+			fetch('geojson/vonalak_join_wgs_retain.geojson').then(r=>r.json()).then(function(kcs_vonalak) {
+				kcsvonalakReteg = L.geoJson(kcs_vonalak, {
+					className: 'kcsvonalak',
+					color: '#00A7E1',
+					weight:Number('6')
+				}).addTo(map);
+			});
+
+			//RÉTEGKEZELŐ
+			var alapterkepek={
+				'OpenStreetMap_standard':osm,
+				'OpenStreetMap_2':osm_2,
+				'Stadia':stadia,
+				'Stamen':stamen,
+				'Stamen_2':stamen_2,
+				'Stamen_3_felirattal':stamen_3,
+				'Stamen_3':stamen_4,
+				'Esri':esri,
+				'Esri_2':esri_2,
+				'Esri_műhold':esri_3,
+				'CartoDB': cartodb,
+				'CartoDB_felirattal': cartodb_2,
+				'CartoDB_2': cartodb_3,
+				'CartoDB_2_felirattal': cartodb_4
+			};
+
+			var retegkezelo=L.control.layers(alapterkepek, null, {collapsed:false}).addTo(map);
+		</script>
+	</body>
+</html>
